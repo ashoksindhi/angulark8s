@@ -1,10 +1,13 @@
 # Stage 1
-FROM node:latest as node
+FROM node:16.18-alpine as node
 WORKDIR /app
-COPY . .
-RUN npm install
-RUN npm run build --prod
+COPY / ./
+COPY package*.json ./
+
+RUN npm install -g @angular/cli@13.2.5 && \
+    npm install && \
+    npm build
 
 # Stage 2
-FROM nginx:alpine
-COPY --from=node /app/dist/sample-app /usr/share/nginx/html
+FROM nginx:1.23.2-alpine
+COPY --from=build /app/dist/sample-app /usr/share/nginx/html
