@@ -1,13 +1,12 @@
 # Stage 1
 FROM node:16.18-alpine as node
-WORKDIR /app
-COPY / ./
-COPY package*.json ./
-
-RUN npm install -g @angular/cli@13.2.5 && \
-    npm install && \
-    npm build
+WORKDIR /usr/src/app
+COPY package.json package-lock.json ./
+RUN npm install
+COPY . .
+RUN npm run build
 
 # Stage 2
 FROM nginx:1.23.2-alpine
-COPY --from=build /app/dist/sample-app /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/nginx.conf
+COPY --from=build /usr/src/app/dist/sample-app /usr/share/nginx/html
